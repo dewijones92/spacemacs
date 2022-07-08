@@ -2,6 +2,12 @@
   '(
     eglot
     haskell-mode
+    vertico
+    consult
+    marginalia
+    orderless
+    ctrlf
+    prescient
     )
   "The list of Lisp packages required by the eglot layer.
 Each entry is either:
@@ -71,3 +77,66 @@ Each entry is either:
 		 :map haskell-cabal-mode-map
 		 ("C-c m"   . haskell-compile)))
 )
+
+
+
+
+(defun haskell-eglot/init-vertico ()
+	(use-package vertico
+	  :config
+	  (vertico-mode)
+	  (vertico-mouse-mode)
+	  :custom
+	  (vertico-count 22)
+	  :bind (:map vertico-map
+		      ("C-'"       . #'vertico-quick-exit)
+		      ;; Have to rebind this because C-m is translated to RET.
+		      ("<return>"  . #'exit-minibuffer)
+		      ("C-m"       . #'vertico-insert)
+		      ("C-c SPC"   . #'vertico-quick-exit)
+		      ("DEL"       . #'vertico-directory-delete-char)))
+)
+
+(defun haskell-eglot/init-consult ()
+  (use-package consult
+  :config
+  (defun pt/yank-pop ()
+    "As pt/yank, but calling consult-yank-pop."
+    (interactive)
+    (let ((point-before (point)))
+      (consult-yank-pop)
+      (indent-region point-before (point))))
+
+  :bind (("C-c i"   . #'consult-imenu)
+         ("C-c b"   . #'consult-buffer)
+         ("C-x b"   . #'consult-buffer)
+         ("C-c r"   . #'consult-recent-file)
+         ("C-c y"   . #'pt/yank-pop)
+         ("C-c R"   . #'consult-bookmark)
+         ("C-c `"   . #'consult-flymake)
+         ("C-c h"   . #'consult-ripgrep)
+         ("C-x C-f" . #'find-file)
+         ("C-h a"   . #'consult-apropos)
+         )
+  :custom
+  (completion-in-region-function #'consult-completion-in-region)
+  (xref-show-xrefs-function #'consult-xref)
+  (xref-show-definitions-function #'consult-xref)
+  (consult-project-root-function #'deadgrep--project-root) ;; ensure ripgrep works
+  ))
+
+(defun haskell-eglot/init-marginalia ()
+  (use-package marginalia
+  :config (marginalia-mode)))
+
+(defun haskell-eglot/init-orderless ()
+  (use-package orderless
+  :custom (completion-styles '(orderless))))
+
+(defun haskell-eglot/init-ctrlf ()
+  (use-package ctrlf
+  :config (ctrlf-mode)))
+
+(defun haskell-eglot/init-prescient ()
+ (use-package prescient
+  :config (prescient-persist-mode)))
