@@ -93,18 +93,6 @@
     (dolist (mode haskell-modes)
       (spacemacs/set-leader-keys-for-major-mode mode "hf" 'helm-hoogle))))
 
-(defun haskell/post-init-flycheck ()
-  (progn
-    (add-hook 'dante-mode-hook
-              (lambda () (flycheck-add-next-checker 'haskell-dante '(warning . haskell-hlint))))
-    (spacemacs/enable-flycheck 'haskell-mode)))
-
-
-(defun haskell/init-flycheck-haskell ()
-  (use-package flycheck-haskell
-    :commands flycheck-haskell-configure
-    :init (add-hook 'flycheck-mode-hook 'flycheck-haskell-configure)))
-
 (defun haskell/post-init-ggtags ()
   (add-hook 'haskell-mode-local-vars-hook #'spacemacs/ggtags-mode-enable)
   (add-hook 'haskell-literate-mode-local-vars-hook #'spacemacs/ggtags-mode-enable)
